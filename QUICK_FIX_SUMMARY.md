@@ -9,6 +9,18 @@
 
 **Solution:** Moved the environment variable check from module-level to inside the `connectToDatabase()` function. Now the check happens at runtime when the connection is actually needed, not during the build.
 
+### 2. **Invalid URL Error**
+**Files Changed:** 
+- `src/app/page.js`
+- `src/app/(site)/[slug]/page.js`
+
+**Problem:** The `new URL()` constructor was being called with `process.env.NEXT_PUBLIC_SITE_URL` which was `undefined` during build time, causing "TypeError: Invalid URL" errors.
+
+**Solution:** 
+- Added conditional checks before creating URL objects: `process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : null`
+- Added fallback values for all environment variable usages: `process.env.NEXT_PUBLIC_SITE_URL || 'https://npiconsultoria.com.br'`
+- This allows the build to complete successfully even without the environment variable, using fallback values
+
 ## 📋 What You Need to Do Next
 
 ### Step 1: Configure Environment Variables in Vercel
@@ -69,6 +81,8 @@ After successful deployment:
 
 ### Modified:
 - ✅ `src/app/lib/mongodb.ts` - Fixed MongoDB connection initialization
+- ✅ `src/app/page.js` - Fixed Invalid URL errors with fallback values
+- ✅ `src/app/(site)/[slug]/page.js` - Fixed Invalid URL errors with fallback values
 - ✅ `.gitignore` - Added exception for `.env.example`
 
 ## 🔍 How to Get Your Environment Variables

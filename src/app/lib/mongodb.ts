@@ -1,12 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI as string;
-
-if (!MONGODB_URI) {
-  throw new Error("Defina a variável de ambiente MONGODB_URI");
-}
-
-
 let cached = global.mongoose as {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
@@ -17,6 +10,13 @@ if (!cached) {
 }
 
 export async function connectToDatabase() {
+  // Check for MONGODB_URI at runtime, not at module import time
+  const MONGODB_URI = process.env.MONGODB_URI as string;
+
+  if (!MONGODB_URI) {
+    throw new Error("Defina a variável de ambiente MONGODB_URI");
+  }
+
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
